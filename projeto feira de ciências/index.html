@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoFísica — Feira de Ciências</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0e1318;
+    --surface2: #141b22;
+    --border: #1e2a35;
+    --accent-red: #e8321a;
+    --accent-orange: #f57c00;
+    --accent-blue: #00b4d8;
+    --accent-green: #00e676;
+    --accent-yellow: #ffd600;
+    --text: #e8edf2;
+    --text-muted: #6b7f8e;
+    --text-dim: #3d5060;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.3;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(8,12,16,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.15em;
+    color: var(--accent-red);
+  }
+  .nav-logo span { color: var(--text); }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent-blue); }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 7rem 2.5rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(232,50,26,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 80% at 10% 80%, rgba(0,180,216,0.06) 0%, transparent 50%),
+      linear-gradient(180deg, #080c10 0%, #0a1018 100%);
+  }
+
+  .hero-grid-lines {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(30,42,53,0.4) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,42,53,0.4) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  .hero-content { position: relative; max-width: 900px; }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(232,50,26,0.12);
+    border: 1px solid rgba(232,50,26,0.3);
+    color: var(--accent-red);
+    padding: 0.35rem 0.9rem;
+    border-radius: 2px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent-red);
+    border-radius: 50%;
+    animation: pulse 1.5s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 10vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  h1 .line-red { color: var(--accent-red); }
+  h1 .line-blue { color: var(--accent-blue); }
+
+  .hero-sub {
+    margin-top: 1.5rem;
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    max-width: 560px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .stat-item { text-align: left; }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--accent-orange);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.2rem;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: fadeUp 0.6s 0.5s ease both;
+  }
+
+  .scroll-line {
+    width: 40px;
+    height: 1px;
+    background: var(--text-dim);
+    position: relative;
+    overflow: hidden;
+  }
+  .scroll-line::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: var(--accent-red);
+    animation: scanline 2s linear infinite;
+  }
+  @keyframes scanline { to { left: 200%; } }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── SECTIONS COMMON ─── */
+  section {
+    padding: 6rem 2.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    letter-spacing: 0.03em;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .accent-line {
+    width: 48px;
+    height: 3px;
+    background: var(--accent-red);
+    margin-bottom: 2.5rem;
+  }
+
+  /* ─── INTRO ─── */
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+    margin-top: 3rem;
+  }
+
+  .intro-text p {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .intro-highlight {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-blue);
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .physics-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .physics-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.2rem 1.5rem;
+    border-radius: 2px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .physics-list li:hover {
+    border-color: var(--accent-blue);
+    transform: translateX(4px);
+  }
+
+  .phys-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .phys-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+
+  .phys-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* ─── MOTOR SECTION ─── */
+  .motor-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    max-width: 100%;
+    padding: 6rem 0;
+  }
+
+  .motor-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+  }
+
+  .ciclo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 3rem;
+  }
+
+  .ciclo-step {
+    background: var(--surface2);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .ciclo-step:hover { background: #1a2530; }
+
+  .ciclo-step::before {
+    content: attr(data-num);
+    position: absolute;
+    top: -0.5rem;
+    right: 1rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    color: rgba(255,255,255,0.03);
+    pointer-events: none;
+  }
+
+  .ciclo-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .ciclo-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
+    color: var(--accent-orange);
+    margin-bottom: 0.5rem;
+  }
+  .ciclo-desc { font-size: 0.82rem; color: var(--text-muted); }
+
+  /* ─── TIPOS DE MOTOR ─── */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab-btn {
+    padding: 0.9rem 2rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--accent-red); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; padding-top: 2.5rem; }
+
+  .tab-info h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .tab-badge {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border-radius: 2px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .badge-combustao { background: rgba(232,50,26,0.15); color: var(--accent-red); }
+  .badge-eletrico { background: rgba(0,230,118,0.12); color: var(--accent-green); }
+  .badge-hibrido { background: rgba(0,180,216,0.12); color: var(--accent-blue); }
+  .badge-flex { background: rgba(255,214,0,0.12); color: var(--accent-yellow); }
+
+  .tab-info p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    margin-top: 1rem;
+  }
+  .spec-table tr { border-bottom: 1px solid var(--border); }
+  .spec-table td { padding: 0.7rem 0; }
+  .spec-table td:first-child { color: var(--text-muted); width: 40%; }
+  .spec-table td:last-child { color: var(--text); font-weight: 500; }
+
+  .visual-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 280px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* MOTOR VISUAL ANIMATIONS */
+  .engine-svg { width: 100%; max-width: 240px; }
+
+  /* ─── CURIOSIDADES ─── */
+  .curiosidades-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .curio-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+    cursor: default;
+  }
+  .curio-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-orange);
+  }
+
+  .curio-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-orange), transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .curio-card:hover::after { transform: scaleX(1); }
+
+  .curio-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    line-height: 1;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  .curio-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent-orange);
+    margin-bottom: 0.5rem;
+  }
+
+  .curio-body { font-size: 0.84rem; color: var(--text-muted); }
+
+  /* ─── COMPARATIVO ─── */
+  .compare-section {
+    background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 50%, var(--bg) 100%);
+    max-width: 100%;
+    padding: 6rem 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .compare-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+  }
+
+  .compare-table-wrap {
+    overflow-x: auto;
+    margin-top: 3rem;
+    border: 1px solid var(--border);
+  }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  .compare-table th {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .compare-table th:nth-child(2) { color: var(--accent-red); }
+  .compare-table th:nth-child(3) { color: var(--accent-green); }
+  .compare-table th:nth-child(4) { color: var(--accent-blue); }
+  .compare-table th:nth-child(5) { color: var(--accent-yellow); }
+
+  .compare-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(30,42,53,0.5);
+    color: var(--text-muted);
+  }
+
+  .compare-table td:first-child { color: var(--text); font-weight: 500; }
+
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+  }
+  .dot-green { background: var(--accent-green); }
+  .dot-yellow { background: var(--accent-yellow); }
+  .dot-red { background: var(--accent-red); }
+
+  /* ─── DIAGRAMA ─── */
+  .diagram-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: var(--accent-red);
+    letter-spacing: 0.1em;
+  }
+  .footer-logo span { color: var(--text-muted); }
+
+  .footer-text {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.2rem; }
+    .nav-links { display: none; }
+    section { padding: 4rem 1.2rem; }
+    .intro-grid { grid-template-columns: 1fr; }
+    .ciclo-grid { grid-template-columns: repeat(2, 1fr); }
+    .tab-content.active { grid-template-columns: 1fr; }
+    .curiosidades-grid { grid-template-columns: 1fr; }
+    .hero-stats { flex-wrap: wrap; gap: 1.5rem; }
+    h1 { font-size: 4rem; }
+  }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── ENGINE ANIMATION ─── */
+  @keyframes piston-up-down {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes electric-pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  .piston-anim { animation: piston-up-down 0.8s ease-in-out infinite; }
+  .spin-anim { animation: spin 2s linear infinite; }
+  .elec-anim { animation: electric-pulse 1.2s ease infinite; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Auto<span>Física</span></div>
+  <ul class="nav-links">
+    <li><a href="#intro">Física</a></li>
+    <li><a href="#motor">Motor</a></li>
+    <li><a href="#tipos">Tipos</a></li>
+    <li><a href="#curiosidades">Curiosidades</a></li>
+    <li><a href="#comparativo">Comparativo</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-lines"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Feira de Ciências — Física Aplicada</div>
+    <h1>
+      <div class="line-red">AUTO</div>
+      <div>MOTORES</div>
+      <div class="line-blue">& FÍSICA</div>
+    </h1>
+    <p class="hero-sub">Explore a ciência por trás dos veículos modernos — da combustão ao elétrico, passando pelo flex e híbrido.</p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">4</div>
+        <div class="stat-label">Tempos do Motor</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">4</div>
+        <div class="stat-label">Tipos de Motor</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100+</div>
+        <div class="stat-label">Anos de Evolução</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Explorar
+  </div>
+</div>
+
+<!-- INTRO / FÍSICA -->
+<section id="intro">
+  <div class="section-label">01 / Fundamentos</div>
+  <h2>A FÍSICA <span style="color:var(--accent-blue)">NOS VEÍCULOS</span></h2>
+  <div class="accent-line"></div>
+  <div class="intro-grid reveal">
+    <div class="intro-text">
+      <p>Um automóvel é, na essência, uma máquina de conversão de energia. Cada componente aplica uma lei da física — da segunda lei de Newton ao ciclo termodinâmico de Carnot.</p>
+      <p>Compreender como um carro funciona é compreender a física no mundo real: força, torque, energia, atrito e muito mais integrados num sistema sofisticado que nos transporta diariamente.</p>
+      <div class="intro-highlight">
+        "Um motor a combustão converte apenas ~35% da energia química do combustível em trabalho útil. Os outros ~65% se dissipam como calor — é a Segunda Lei da Termodinâmica em ação."
+      </div>
+    </div>
+    <ul class="physics-list">
+      <li>
+        <span class="phys-icon">⚡</span>
+        <div>
+          <div class="phys-title">Segunda Lei de Newton</div>
+          <div class="phys-desc">F = ma — o motor gera força que acelera a massa do veículo. Quanto maior a potência, maior a aceleração.</div>
+        </div>
+      </li>
+      <li>
+        <span class="phys-icon">🔄</span>
+        <div>
+          <div class="phys-title">Torque & Rotação</div>
+          <div class="phys-desc">τ = F × r — o torque do motor é transmitido pelo eixo de manivelas, caixa de câmbio e diferencial até as rodas.</div>
+        </div>
+      </li>
+      <li>
+        <span class="phys-icon">🔥</span>
+        <div>
+          <div class="phys-title">Termodinâmica</div>
+          <div class="phys-desc">O ciclo Otto converte calor em trabalho. A eficiência é limitada pela taxa de compressão e pela diferença de temperatura.</div>
+        </div>
+      </li>
+      <li>
+        <span class="phys-icon">🌊</span>
+        <div>
+          <div class="phys-title">Dinâmica dos Fluidos</div>
+          <div class="phys-desc">A aerodinâmica (arrasto e sustentação) afeta diretamente a eficiência — por isso carros modernos têm formas calculadas.</div>
+        </div>
+      </li>
+      <li>
+        <span class="phys-icon">🧲</span>
+        <div>
+          <div class="phys-title">Eletromagnetismo</div>
+          <div class="phys-desc">Motores elétricos e geradores operam pela Lei de Faraday: a variação de fluxo magnético induz corrente elétrica.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- MOTOR A COMBUSTÃO -->
+<div class="motor-section">
+  <div class="motor-inner">
+    <div class="section-label">02 / Mecânica</div>
+    <h2 id="motor">O CICLO <span style="color:var(--accent-orange)">OTTO</span></h2>
+    <div class="accent-line" style="background:var(--accent-orange)"></div>
+    <p style="color:var(--text-muted); max-width:620px; margin-bottom:0.5rem;">O motor de 4 tempos (ciclo Otto) é o coração da maioria dos veículos. Cada tempo realiza uma função termodinâmica precisa.</p>
+
+    <div class="ciclo-grid reveal">
+      <div class="ciclo-step" data-num="1">
+        <div class="ciclo-icon">⬇️</div>
+        <div class="ciclo-title">Admissão</div>
+        <div class="ciclo-desc">O pistão desce, abrindo a válvula de admissão. A mistura ar-combustível entra no cilindro. Volume aumenta, pressão cai.</div>
+      </div>
+      <div class="ciclo-step" data-num="2">
+        <div class="ciclo-icon">⬆️</div>
+        <div class="ciclo-title">Compressão</div>
+        <div class="ciclo-desc">Válvulas fechadas, pistão sobe comprimindo a mistura. Temperatura e pressão aumentam drasticamente (lei dos gases ideais).</div>
+      </div>
+      <div class="ciclo-step" data-num="3">
+        <div class="ciclo-icon">💥</div>
+        <div class="ciclo-title">Explosão</div>
+        <div class="ciclo-desc">A vela dispara, ignição ocorre. A expansão rápida dos gases empurra o pistão para baixo — aqui o trabalho é realizado.</div>
+      </div>
+      <div class="ciclo-step" data-num="4">
+        <div class="ciclo-icon">💨</div>
+        <div class="ciclo-title">Escapamento</div>
+        <div class="ciclo-desc">O pistão sobe novamente expulsando os gases queimados pelo cano de escape. O ciclo recomeça centenas de vezes por minuto.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:2.5rem; padding:1.5rem; background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--accent-orange); max-width:700px;" class="reveal">
+      <div style="font-family:'Space Mono',monospace; font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.5rem;">Equação de Eficiência Térmica</div>
+      <div style="font-family:'Space Mono',monospace; font-size:1.1rem; color:var(--accent-orange);">η = 1 − (1 / r<sup style="font-size:0.7rem">γ−1</sup>)</div>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.7rem;">Onde <strong>r</strong> é a taxa de compressão e <strong>γ</strong> é o coeficiente adiabático do gás (~1,4 para ar). Quanto maior a compressão, maior a eficiência.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TIPOS DE MOTOR -->
+<section id="tipos">
+  <div class="section-label">03 / Tecnologias</div>
+  <h2>TIPOS DE <span style="color:var(--accent-red)">MOTOR</span></h2>
+  <div class="accent-line"></div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('combustao')">Combustão</button>
+    <button class="tab-btn" onclick="switchTab('eletrico')">Elétrico</button>
+    <button class="tab-btn" onclick="switchTab('hibrido')">Híbrido</button>
+    <button class="tab-btn" onclick="switchTab('flex')">Flex</button>
+  </div>
+
+  <!-- COMBUSTÃO -->
+  <div class="tab-content active reveal" id="tab-combustao">
+    <div class="tab-info">
+      <h3>Motor a Combustão</h3>
+      <span class="tab-badge badge-combustao">ICE — Internal Combustion Engine</span>
+      <p>O motor a combustão interna queima combustível dentro dos cilindros para converter energia química em energia mecânica. O ciclo Otto (gasolina) e o ciclo Diesel são os mais comuns.</p>
+      <p>A potência é gerada pelas explosões controladas que empurram os pistões, transmitindo rotação ao virabrequim. Um motor 1.0 turbo moderno pode superar em eficiência um 2.0 aspirado mais antigo.</p>
+      <table class="spec-table">
+        <tr><td>Combustível</td><td>Gasolina, Diesel</td></tr>
+        <tr><td>Eficiência Térmica</td><td>~30–40%</td></tr>
+        <tr><td>Emissão de CO₂</td><td>Alta (~120–200 g/km)</td></tr>
+        <tr><td>Faixa de RPM útil</td><td>1.000 – 7.000 rpm</td></tr>
+        <tr><td>Torque máx.</td><td>Em RPM médio/alto</td></tr>
+      </table>
+    </div>
+    <div class="visual-box">
+      <svg class="engine-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+        <!-- Bloco motor -->
+        <rect x="50" y="60" width="100" height="100" rx="4" fill="#1e2a35" stroke="#2d4050" stroke-width="1.5"/>
+        <!-- Cabeçote -->
+        <rect x="45" y="40" width="110" height="25" rx="3" fill="#253040" stroke="#2d4050" stroke-width="1.5"/>
+        <!-- Vela -->
+        <rect x="93" y="30" width="14" height="16" rx="2" fill="#e8321a" opacity="0.8"/>
+        <!-- Pistão animado -->
+        <g class="piston-anim">
+          <rect x="65" y="100" width="70" height="35" rx="3" fill="#3a5060" stroke="#4a6070" stroke-width="1"/>
+          <line x1="100" y1="135" x2="100" y2="165" stroke="#5a7080" stroke-width="6" stroke-linecap="round"/>
+        </g>
+        <!-- Virabrequim -->
+        <circle cx="100" cy="175" r="18" fill="none" stroke="#2d4050" stroke-width="3"/>
+        <g class="spin-anim" style="transform-origin:100px 175px">
+          <line x1="100" y1="157" x2="100" y2="193" stroke="#e8321a" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="100" cy="175" r="5" fill="#e8321a"/>
+        </g>
+        <!-- Explosão -->
+        <circle class="elec-anim" cx="100" cy="70" r="10" fill="rgba(245,124,0,0.5)"/>
+        <!-- Labels -->
+        <text x="100" y="215" text-anchor="middle" fill="#6b7f8e" font-size="10" font-family="monospace">VIRABREQUIM</text>
+      </svg>
+      <div style="font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--text-dim);">Animação do ciclo de pistão</div>
+    </div>
+  </div>
+
+  <!-- ELÉTRICO -->
+  <div class="tab-content reveal" id="tab-eletrico">
+    <div class="tab-info">
+      <h3>Motor Elétrico</h3>
+      <span class="tab-badge badge-eletrico">BEV — Battery Electric Vehicle</span>
+      <p>O motor elétrico converte energia elétrica em energia mecânica via interação eletromagnética. Não há ciclo de combustão — é silencioso, instantâneo e extremamente eficiente.</p>
+      <p>O torque máximo está disponível desde 0 rpm, o que explica a brutal aceleração de veículos como o Tesla Model S. A frenagem regenerativa recupera energia cinética e recarrega a bateria.</p>
+      <table class="spec-table">
+        <tr><td>Combustível</td><td>Energia elétrica (kWh)</td></tr>
+        <tr><td>Eficiência</td><td>~85–95%</td></tr>
+        <tr><td>Emissão direta CO₂</td><td>Zero</td></tr>
+        <tr><td>Torque</td><td>Máximo desde 0 rpm</td></tr>
+        <tr><td>Componentes móveis</td><td>~20 (vs ~200 ICE)</td></tr>
+      </table>
+    </div>
+    <div class="visual-box">
+      <svg class="engine-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+        <!-- Estator -->
+        <circle cx="100" cy="110" r="60" fill="none" stroke="#253040" stroke-width="12"/>
+        <!-- Bobinas -->
+        <circle cx="100" cy="55" r="8" fill="#00e676" opacity="0.7" class="elec-anim"/>
+        <circle cx="148" cy="83" r="8" fill="#00e676" opacity="0.5" class="elec-anim" style="animation-delay:0.2s"/>
+        <circle cx="148" cy="138" r="8" fill="#00e676" opacity="0.7" class="elec-anim" style="animation-delay:0.4s"/>
+        <circle cx="100" cy="165" r="8" fill="#00e676" opacity="0.5" class="elec-anim" style="animation-delay:0.6s"/>
+        <circle cx="52" cy="138" r="8" fill="#00e676" opacity="0.7" class="elec-anim" style="animation-delay:0.8s"/>
+        <circle cx="52" cy="83" r="8" fill="#00e676" opacity="0.5" class="elec-anim" style="animation-delay:1s"/>
+        <!-- Rotor -->
+        <g class="spin-anim" style="transform-origin:100px 110px">
+          <ellipse cx="100" cy="110" rx="30" ry="30" fill="#0e1318" stroke="#00b4d8" stroke-width="2"/>
+          <line x1="100" y1="80" x2="100" y2="140" stroke="#00b4d8" stroke-width="3" stroke-linecap="round"/>
+          <line x1="70" y1="110" x2="130" y2="110" stroke="#00b4d8" stroke-width="3" stroke-linecap="round"/>
+        </g>
+        <!-- Eixo -->
+        <circle cx="100" cy="110" r="8" fill="#00e676"/>
+        <!-- Raios elétricos -->
+        <text x="100" y="200" text-anchor="middle" fill="#6b7f8e" font-size="9" font-family="monospace">MOTOR ELÉTRICO CA</text>
+        <text x="100" y="212" text-anchor="middle" fill="#6b7f8e" font-size="9" font-family="monospace">ESTATOR + ROTOR</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- HÍBRIDO -->
+  <div class="tab-content reveal" id="tab-hibrido">
+    <div class="tab-info">
+      <h3>Motor Híbrido</h3>
+      <span class="tab-badge badge-hibrido">HEV / PHEV</span>
+      <p>O sistema híbrido combina um motor a combustão com um ou mais motores elétricos. O veículo decide automaticamente qual fonte de energia usar para maximizar a eficiência.</p>
+      <p>Em baixa velocidade, opera no modo elétrico (zero emissão). Em aceleração forte, ambos trabalham juntos. Na desaceleração, o motor elétrico vira gerador e recupera energia.</p>
+      <table class="spec-table">
+        <tr><td>Fontes de energia</td><td>Combustível + Bateria</td></tr>
+        <tr><td>Eficiência geral</td><td>~40–50% combinado</td></tr>
+        <tr><td>Emissão CO₂</td><td>Baixa (~70–100 g/km)</td></tr>
+        <tr><td>Alcance</td><td>700–1000 km (combinado)</td></tr>
+        <tr><td>Recarga</td><td>Regenerativa / Tomada (PHEV)</td></tr>
+      </table>
+    </div>
+    <div class="visual-box" style="gap:0.5rem; padding:1.5rem">
+      <svg viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:280px">
+        <!-- Bateria -->
+        <rect x="10" y="55" width="55" height="40" rx="4" fill="#1e2a35" stroke="#00b4d8" stroke-width="1.5"/>
+        <text x="37" y="78" text-anchor="middle" fill="#00b4d8" font-size="8" font-family="monospace">BATERIA</text>
+        <!-- Motor elétrico -->
+        <circle cx="105" cy="75" r="25" fill="#1e2a35" stroke="#00e676" stroke-width="1.5"/>
+        <text x="105" y="70" text-anchor="middle" fill="#00e676" font-size="7" font-family="monospace">MOTOR</text>
+        <text x="105" y="81" text-anchor="middle" fill="#00e676" font-size="7" font-family="monospace">ELÉTRICO</text>
+        <!-- Motor combustão -->
+        <rect x="145" y="52" width="50" height="46" rx="4" fill="#1e2a35" stroke="#e8321a" stroke-width="1.5"/>
+        <text x="170" y="72" text-anchor="middle" fill="#e8321a" font-size="7" font-family="monospace">MOTOR</text>
+        <text x="170" y="83" text-anchor="middle" fill="#e8321a" font-size="7" font-family="monospace">COMBUS.</text>
+        <!-- Transmissão -->
+        <rect x="95" y="115" width="50" height="22" rx="3" fill="#1e2a35" stroke="#f57c00" stroke-width="1.5"/>
+        <text x="120" y="130" text-anchor="middle" fill="#f57c00" font-size="7" font-family="monospace">TRANSMISSÃO</text>
+        <!-- Linhas de conexão -->
+        <line x1="65" y1="75" x2="80" y2="75" stroke="#00b4d8" stroke-width="2" stroke-dasharray="3,2"/>
+        <line x1="130" y1="75" x2="145" y2="75" stroke="#00e676" stroke-width="2"/>
+        <line x1="120" y1="100" x2="120" y2="115" stroke="#f57c00" stroke-width="2"/>
+        <!-- Setas -->
+        <polygon points="78,72 84,75 78,78" fill="#00b4d8"/>
+        <polygon points="143,72 149,75 143,78" fill="#00e676"/>
+        <polygon points="117,113 120,119 123,113" fill="#f57c00"/>
+      </svg>
+      <div style="font-family:'Space Mono',monospace; font-size:0.68rem; color:var(--text-dim); text-align:center; line-height:1.5;">Sinergia entre motor elétrico e combustão<br>gerenciada pela ECU (unidade de controle)</div>
+    </div>
+  </div>
+
+  <!-- FLEX -->
+  <div class="tab-content reveal" id="tab-flex">
+    <div class="tab-info">
+      <h3>Motor Flex</h3>
+      <span class="tab-badge badge-flex">FFV — Flexible Fuel Vehicle</span>
+      <p>O motor flex é uma inovação brasileira (pioneirismo da Magneti Marelli, 2003) que permite operar com qualquer proporção de gasolina e etanol — de E0 a E100.</p>
+      <p>A ECU (Unidade de Controle Eletrônico) ajusta em tempo real a injeção, o avanço de ignição e outros parâmetros. O etanol tem octanagem ~112, contra ~92 da gasolina, permitindo maior compressão.</p>
+      <table class="spec-table">
+        <tr><td>Combustíveis</td><td>Gasolina, Etanol ou Mistura</td></tr>
+        <tr><td>Octanagem Etanol</td><td>~112 RON</td></tr>
+        <tr><td>Eficiência Etanol</td><td>~30% superior em torque</td></tr>
+        <tr><td>Emissão CO₂ Etanol</td><td>~70% menor (balanço)</td></tr>
+        <tr><td>Sensor chave</td><td>Sonda lambda (O₂)</td></tr>
+      </table>
+    </div>
+    <div class="visual-box" style="padding:1.5rem">
+      <div style="width:100%; max-width:260px">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:1rem">
+          <div style="text-align:center; flex:1">
+            <div style="background: linear-gradient(to top, #e8321a88, #e8321a22); height:90px; border:1px solid #e8321a55; border-radius:2px 2px 0 0; display:flex; align-items:flex-end; justify-content:center; padding-bottom:0.5rem">
+              <span style="font-family:'Space Mono',monospace; font-size:0.65rem; color:#e8321a">GASOLINA</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.3rem">~92 RON</div>
+          </div>
+          <div style="text-align:center; flex:1">
+            <div style="background: linear-gradient(to top, #ffd60088, #ffd60022); height:130px; border:1px solid #ffd60055; border-radius:2px 2px 0 0; display:flex; align-items:flex-end; justify-content:center; padding-bottom:0.5rem">
+              <span style="font-family:'Space Mono',monospace; font-size:0.65rem; color:#ffd600">ETANOL</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.3rem">~112 RON</div>
+          </div>
+          <div style="text-align:center; flex:1">
+            <div style="background: linear-gradient(to top, #00e67688, #00e67622); height:110px; border:1px solid #00e67655; border-radius:2px 2px 0 0; display:flex; align-items:flex-end; justify-content:center; padding-bottom:0.5rem">
+              <span style="font-family:'Space Mono',monospace; font-size:0.65rem; color:#00e676">FLEX</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.3rem">~E27</div>
+          </div>
+        </div>
+        <div style="font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--text-dim); text-align:center">Comparativo de Octanagem (RON)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CURIOSIDADES -->
+<section id="curiosidades">
+  <div class="section-label">04 / Fatos</div>
+  <h2>CURIOSIDADES <span style="color:var(--accent-yellow)">FÍSICAS</span></h2>
+  <div class="accent-line" style="background:var(--accent-yellow)"></div>
+
+  <div class="curiosidades-grid">
+    <div class="curio-card reveal">
+      <div class="curio-num">01</div>
+      <div class="curio-title">O efeito gyroscópico das rodas</div>
+      <div class="curio-body">Rodas girando geram momento angular. Por isso, ao virar uma bicicleta ou moto em alta velocidade, ela se mantém ereta — é a conservação do momento angular de Euler.</div>
+    </div>
+    <div class="curio-card reveal" style="transition-delay:0.1s">
+      <div class="curio-num">02</div>
+      <div class="curio-title">Frenagem regenerativa</div>
+      <div class="curio-body">Carros elétricos e híbridos transformam a energia cinética da frenagem em energia elétrica. É a Lei de Lenz: o motor vira gerador, criando resistência que desacelera o veículo.</div>
+    </div>
+    <div class="curio-card reveal" style="transition-delay:0.2s">
+      <div class="curio-num">03</div>
+      <div class="curio-title">Calor e pneus na F1</div>
+      <div class="curio-body">Na Fórmula 1, os pneus operam entre 80–120°C para atingir a aderência máxima. A temperatura afeta o módulo de elasticidade e o coeficiente de atrito estático.</div>
+    </div>
+    <div class="curio-card reveal" style="transition-delay:0.05s">
+      <div class="curio-num">04</div>
+      <div class="curio-title">Turbo e compressão</div>
+      <div class="curio-body">O turbocompressor usa o fluxo de gás de escape para girar uma turbina que comprime o ar de admissão. Mais ar = mais combustível = mais potência. Aplica termodinâmica de compressão adiabática.</div>
+    </div>
+    <div class="curio-card reveal" style="transition-delay:0.15s">
+      <div class="curio-num">05</div>
+      <div class="curio-title">Força G na curva</div>
+      <div class="curio-body">Na curva, o corpo sente força centrífuga = mv²/r. Em carros de corrida a 5G, o piloto sente o equivalente a 5× seu peso — é por isso que atletas musculosos conduzem melhor em alta performance.</div>
+    </div>
+    <div class="curio-card reveal" style="transition-delay:0.25s">
+      <div class="curio-num">06</div>
+      <div class="curio-title">Efeito Bernoulli no assoalho</div>
+      <div class="curio-body">Carros de corrida usam o efeito Bernoulli no assoalho: ar acelerado embaixo do carro gera pressão negativa (downforce), pressionando o veículo contra a pista sem aumentar o peso.</div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARATIVO -->
+<div class="compare-section">
+  <div class="compare-inner">
+    <div class="section-label">05 / Análise</div>
+    <h2 id="comparativo">COMPARATIVO <span style="color:var(--accent-blue)">GERAL</span></h2>
+    <div class="accent-line" style="background:var(--accent-blue)"></div>
+    <p style="color:var(--text-muted); max-width:600px;">Uma visão comparativa dos principais aspectos físicos, ambientais e de performance entre os quatro tipos de motorização.</p>
+
+    <div class="compare-table-wrap reveal">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="color:var(--text-muted)">Critério</th>
+            <th>🔥 Combustão</th>
+            <th>⚡ Elétrico</th>
+            <th>🔋 Híbrido</th>
+            <th>🌿 Flex</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Eficiência Energética</td>
+            <td><span class="dot dot-red"></span>30–40%</td>
+            <td><span class="dot dot-green"></span>85–95%</td>
+            <td><span class="dot dot-green"></span>40–50%</td>
+            <td><span class="dot dot-yellow"></span>32–42%</td>
+          </tr>
+          <tr>
+            <td>Emissão de CO₂</td>
+            <td><span class="dot dot-red"></span>Alta</td>
+            <td><span class="dot dot-green"></span>Zero direta</td>
+            <td><span class="dot dot-yellow"></span>Baixa</td>
+            <td><span class="dot dot-yellow"></span>Baixa (etanol)</td>
+          </tr>
+          <tr>
+            <td>Torque inicial (0 rpm)</td>
+            <td><span class="dot dot-red"></span>Baixo</td>
+            <td><span class="dot dot-green"></span>Máximo</td>
+            <td><span class="dot dot-green"></span>Alto</td>
+            <td><span class="dot dot-red"></span>Baixo</td>
+          </tr>
+          <tr>
+            <td>Custo de manutenção</td>
+            <td><span class="dot dot-yellow"></span>Médio</td>
+            <td><span class="dot dot-green"></span>Baixo</td>
+            <td><span class="dot dot-yellow"></span>Médio</td>
+            <td><span class="dot dot-yellow"></span>Médio</td>
+          </tr>
+          <tr>
+            <td>Autonomia</td>
+            <td><span class="dot dot-green"></span>600–900 km</td>
+            <td><span class="dot dot-yellow"></span>300–600 km</td>
+            <td><span class="dot dot-green"></span>700–1000 km</td>
+            <td><span class="dot dot-green"></span>600–900 km</td>
+          </tr>
+          <tr>
+            <td>Infraestrutura BR</td>
+            <td><span class="dot dot-green"></span>Excelente</td>
+            <td><span class="dot dot-red"></span>Em expansão</td>
+            <td><span class="dot dot-yellow"></span>Boa</td>
+            <td><span class="dot dot-green"></span>Excelente</td>
+          </tr>
+          <tr>
+            <td>Complexidade mecânica</td>
+            <td><span class="dot dot-red"></span>Alta (~1800 peças)</td>
+            <td><span class="dot dot-green"></span>Baixa (~20 peças)</td>
+            <td><span class="dot dot-red"></span>Alta</td>
+            <td><span class="dot dot-red"></span>Alta</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:flex; gap:1.5rem; margin-top:1.5rem; flex-wrap:wrap">
+      <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.78rem; color:var(--text-muted)"><span class="dot dot-green"></span>Positivo</div>
+      <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.78rem; color:var(--text-muted)"><span class="dot dot-yellow"></span>Moderado</div>
+      <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.78rem; color:var(--text-muted)"><span class="dot dot-red"></span>Desvantagem</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">AUTO<span>FÍSICA</span></div>
+    <div class="footer-text" style="margin-top:0.4rem">Projeto de Feira de Ciências — Física Aplicada</div>
+  </div>
+  <div class="footer-text" style="text-align:right">
+    Termodinâmica · Eletromagnetismo<br>
+    Dinâmica · Mecânica dos Fluidos
+  </div>
+</footer>
+
+<script>
+  // Tab switching
+  function switchTab(id) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
